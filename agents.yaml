@@ -42,21 +42,21 @@ agents:
     protected: false
     workspace: ".agents/researcher"
 
-  # Claude Haiku: English prose quality matters here — stays on Anthropic.
+  # GPT-4o-mini: cost-efficient prose quality on OpenAI.
   - id: "writer"
     name: "✍️ Writer"
     emoji: "✍️"
     role: "Medium article drafting, 800-1000 words, 4-minute read"
-    model: "anthropic/claude-haiku-4-5-20251001"
+    model: "openai/gpt-4o-mini"
     protected: false
     workspace: ".agents/writer"
 
-  # Claude Sonnet: nuanced editorial judgment — strongest reasoning needed.
+  # GPT-4o-mini: cost-efficient; strong enough for editorial judgment.
   - id: "editor"
     name: "📝 Editor"
     emoji: "📝"
     role: "Draft review, quality control, approval or revision requests"
-    model: "anthropic/claude-sonnet-4-6"
+    model: "openai/gpt-4o-mini"
     protected: false
     workspace: ".agents/editor"
 
@@ -67,7 +67,7 @@ agents:
   #   name: "💼 LinkedIn"
   #   emoji: "💼"
   #   role: "LinkedIn post creation from approved articles"
-  #   model: "anthropic/claude-haiku-4-5-20251001"
+  #   model: "openai/gpt-4o-mini"
   #   protected: false
   #   workspace: ".agents/linkedin"
   #
@@ -75,7 +75,7 @@ agents:
   #   name: "🐦 Twitter"
   #   emoji: "🐦"
   #   role: "Twitter/X thread creation from approved articles"
-  #   model: "anthropic/claude-haiku-4-5-20251001"
+  #   model: "openai/gpt-4o-mini"
   #   protected: false
   #   workspace: ".agents/twitter"
 

@@ -2,7 +2,7 @@
 
 **Agent ID**: `editor`
 **Role**: Quality review and editorial approval
-**Model**: `anthropic/claude-sonnet-4-6` (enhanced reasoning for nuanced editorial judgment)
+**Model**: `openai/gpt-4o-mini`
 **Telegram**: Responds when `@editor` is mentioned
 
 **Reports to**: `@orchestrator`

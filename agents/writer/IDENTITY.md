@@ -2,7 +2,7 @@
 
 **Agent ID**: `writer`
 **Role**: Medium article drafting
-**Model**: `anthropic/claude-haiku-4-5-20251001`
+**Model**: `openai/gpt-4o-mini`
 **Telegram**: Responds when `@writer` is mentioned
 
 **Reports to**: `@orchestrator`

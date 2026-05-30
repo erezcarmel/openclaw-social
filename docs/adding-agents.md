@@ -19,12 +19,12 @@ How to extend the OpenCLAW Social fleet with new specialist agents — for examp
   name: "💼 LinkedIn"
   emoji: "💼"
   role: "LinkedIn post creation from approved articles"
-  model: "anthropic/claude-haiku-4-5-20251001"
+  model: "openai/gpt-4o-mini"
   protected: false
   workspace: ".agents/linkedin"
 ```
 
-> **Model tip**: Use `deepseek/deepseek-chat` for routing/data agents, `claude-haiku-4-5-20251001` for creative writing agents, `claude-sonnet-4-6` only for nuanced judgment.
+> **Model tip**: Use `deepseek/deepseek-chat` for routing/data agents, `openai/gpt-4o-mini` for writing and judgment agents.
 
 ---
 
@@ -153,7 +153,7 @@ See [team-channels.md](team-channels.md) for Telegram group setup details.
   name: "🐦 Twitter"
   emoji: "🐦"
   role: "Twitter/X thread creation from approved articles"
-  model: "anthropic/claude-haiku-4-5-20251001"
+  model: "openai/gpt-4o-mini"
   protected: false
   workspace: ".agents/twitter"
 ```

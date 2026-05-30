@@ -38,7 +38,7 @@ prompt_secret() {
   eval "$var_name=\"$value\""
 }
 
-prompt_secret ANTHROPIC_API_KEY  "Anthropic API key (for Writer + Editor)"
+prompt_secret OPENAI_API_KEY     "OpenAI API key (for Writer + Editor — get at platform.openai.com)"
 prompt_secret DEEPSEEK_API_KEY   "DeepSeek API key (for Orchestrator + Researcher — get at platform.deepseek.com)"
 prompt_secret TELEGRAM_BOT_TOKEN "Telegram bot token (from @BotFather)"
 printf "Telegram group chat ID (e.g. -1001234567890): "
@@ -47,17 +47,17 @@ echo ""
 
 # ── Register API keys ──────────────────────────────────────────────────────
 echo "Registering API keys..."
-echo "$ANTHROPIC_API_KEY" | openclaw models auth paste-token --provider anthropic
-echo "$DEEPSEEK_API_KEY"  | openclaw models auth paste-token --provider deepseek
+echo "$OPENAI_API_KEY"   | openclaw models auth paste-token --provider openai
+echo "$DEEPSEEK_API_KEY" | openclaw models auth paste-token --provider deepseek
 
 # ── Agent definitions (mirrors agents.yaml) ────────────────────────────────
 # Format: id|display_name|emoji|model|workspace_suffix
-# DeepSeek V3 for routing/research (~3-4x cheaper); Claude for writing/editing.
+# DeepSeek V3 for routing/research; GPT-4o-mini for writing/editing.
 AGENTS=(
   "orchestrator|🦞 Orchestrator|🦞|deepseek/deepseek-chat|workspace-orchestrator"
   "researcher|🔍 Researcher|🔍|deepseek/deepseek-chat|workspace-researcher"
-  "writer|✍️ Writer|✍️|anthropic/claude-haiku-4-5-20251001|workspace-writer"
-  "editor|📝 Editor|📝|anthropic/claude-sonnet-4-6|workspace-editor"
+  "writer|✍️ Writer|✍️|openai/gpt-4o-mini|workspace-writer"
+  "editor|📝 Editor|📝|openai/gpt-4o-mini|workspace-editor"
 )
 
 # ── Provision each agent ───────────────────────────────────────────────────
