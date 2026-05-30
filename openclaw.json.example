@@ -1,0 +1,107 @@
+{
+  "agents": {
+    "list": [
+      {
+        "id": "orchestrator",
+        "workspace": "~/.openclaw/workspace-orchestrator",
+        "identity": {
+          "name": "🦞 Orchestrator",
+          "emoji": "🦞",
+          "theme": "social media operations manager"
+        }
+      },
+      {
+        "id": "researcher",
+        "workspace": "~/.openclaw/workspace-researcher",
+        "identity": {
+          "name": "🔍 Researcher",
+          "emoji": "🔍",
+          "theme": "data analyst and trend spotter"
+        }
+      },
+      {
+        "id": "writer",
+        "workspace": "~/.openclaw/workspace-writer",
+        "identity": {
+          "name": "✍️ Writer",
+          "emoji": "✍️",
+          "theme": "content creator"
+        }
+      },
+      {
+        "id": "editor",
+        "workspace": "~/.openclaw/workspace-editor",
+        "identity": {
+          "name": "📝 Editor",
+          "emoji": "📝",
+          "theme": "editorial director"
+        }
+      }
+    ],
+    "defaults": {
+      "model": {
+        "primary": "deepseek/deepseek-chat"
+      },
+      "subagents": {
+        "allowAgents": ["researcher", "writer", "editor"],
+        "runTimeoutSeconds": 600,
+        "maxSpawnDepth": 2
+      },
+      "sandbox": {
+        "mode": "non-main"
+      }
+    }
+  },
+  "bindings": [
+    {
+      "agentId": "orchestrator",
+      "match": {
+        "channel": "telegram",
+        "groupId": "${TELEGRAM_GROUP_ID}",
+        "requireMention": false
+      }
+    },
+    {
+      "agentId": "researcher",
+      "match": {
+        "channel": "telegram",
+        "groupId": "${TELEGRAM_GROUP_ID}",
+        "requireMention": true
+      }
+    },
+    {
+      "agentId": "writer",
+      "match": {
+        "channel": "telegram",
+        "groupId": "${TELEGRAM_GROUP_ID}",
+        "requireMention": true
+      }
+    },
+    {
+      "agentId": "editor",
+      "match": {
+        "channel": "telegram",
+        "groupId": "${TELEGRAM_GROUP_ID}",
+        "requireMention": true
+      }
+    }
+  ],
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "botToken": "${TELEGRAM_BOT_TOKEN}",
+      "dmPolicy": "pairing"
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "binding": "loopback",
+    "controlUi": {
+      "enabled": true,
+      "basePath": "/openclaw"
+    }
+  },
+  "session": {
+    "dmScope": "per-channel-peer"
+  }
+}

@@ -1,0 +1,13 @@
+# Secrets — never commit these
+.env
+*.env.local
+
+# openclaw.json with real tokens (use openclaw.json.example instead)
+openclaw.json
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
