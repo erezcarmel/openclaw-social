@@ -20,8 +20,7 @@ All agents communicate visibly in a shared Telegram group, referencing each othe
 ### Prerequisites
 - Node.js 24+ (or 22.19+ LTS)
 - OpenCLAW CLI: `npm install -g openclaw`
-- Anthropic API key
-- DeepSeek API key
+- OpenRouter API key (routes to all model providers — get one at openrouter.ai)
 - Telegram bot token (from @BotFather)
 
 ### One-Command Setup
@@ -78,10 +77,10 @@ Every step is announced visibly in the Telegram group by the acting agent.
 
 | Agent | Model | Reason |
 |-------|-------|--------|
-| 🦞 Orchestrator | DeepSeek V3 | Routing logic only — ~3-4x cheaper than Haiku |
+| 🦞 Orchestrator | DeepSeek V3 | Routing logic only — cheapest option for structured tasks |
 | 🔍 Researcher | DeepSeek V3 | Structured bullet summaries — DeepSeek excels here |
-| ✍️ Writer | Claude Haiku 4.5 | English prose quality — stays on Anthropic |
-| 📝 Editor | Claude Sonnet 4.6 | Nuanced judgment — strongest reasoning needed |
+| ✍️ Writer | GPT-4o-mini | Cost-efficient prose quality on OpenAI |
+| 📝 Editor | GPT-4o-mini | Strong reasoning at a fraction of GPT-4o cost |
 
 - Research brief hard-capped at 500 words → limits Writer's token input
 - Sub-agents spawned with `context: isolated` → no conversation history bleed

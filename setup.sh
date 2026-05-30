@@ -14,7 +14,7 @@ echo "  OpenCLAW Social — Agent Setup"
 echo "========================================="
 echo ""
 
-# ── Preflight checks ──────────────────────────────────────────────────────
+# ── Preflight checks ───────────────────────────────────────────────────────
 if ! command -v openclaw &>/dev/null; then
   echo "❌  openclaw CLI not found."
   echo "    Install it with: npm install -g openclaw"
@@ -38,8 +38,7 @@ prompt_secret() {
   eval "$var_name=\"$value\""
 }
 
-prompt_secret ANTHROPIC_API_KEY  "Anthropic API key (for Writer + Editor)"
-prompt_secret DEEPSEEK_API_KEY   "DeepSeek API key (for Orchestrator + Researcher — get at platform.deepseek.com)"
+prompt_secret OPENROUTER_API_KEY "OpenRouter API key (routes to all providers — get at openrouter.ai/keys)"
 prompt_secret TELEGRAM_BOT_TOKEN "Telegram bot token (from @BotFather)"
 printf "Telegram group chat ID (e.g. -1001234567890): "
 read -r TELEGRAM_GROUP_ID
@@ -47,27 +46,28 @@ echo ""
 
 # ── Register API keys ──────────────────────────────────────────────────────
 echo "Registering API keys..."
-echo "$ANTHROPIC_API_KEY" | openclaw models auth paste-token --provider anthropic
-echo "$DEEPSEEK_API_KEY"  | openclaw models auth paste-token --provider deepseek
+echo "$OPENROUTER_API_KEY" | openclaw models auth paste-token --provider openrouter
 
 # ── Agent definitions (mirrors agents.yaml) ────────────────────────────────
 # Format: id|display_name|emoji|model|workspace_suffix
-# DeepSeek V3 for routing/research (~3-4x cheaper); Claude for writing/editing.
+# DeepSeek V3 for routing/research; GPT-4o-mini for writing/editing.
 AGENTS=(
   "orchestrator|🦞 Orchestrator|🦞|deepseek/deepseek-chat|workspace-orchestrator"
   "researcher|🔍 Researcher|🔍|deepseek/deepseek-chat|workspace-researcher"
-  "writer|✍️ Writer|✍️|anthropic/claude-haiku-4-5-20251001|workspace-writer"
-  "editor|📝 Editor|📝|anthropic/claude-sonnet-4-6|workspace-editor"
+  "writer|✍️ Writer|✍️|openai/gpt-4o-mini|workspace-writer"
+  "editor|📝 Editor|📝|openai/gpt-4o-mini|workspace-editor"
 )
 
 # ── Provision each agent ───────────────────────────────────────────────────
 echo ""
 echo "Registering agents..."
 
+REPO_URL="https://github.com/erezcarmel/openclaw-social"
+RAW_BASE="https://raw.githubusercontent.com/erezcarmel/openclaw-social/main"
+
 for AGENT_ENTRY in "${AGENTS[@]}"; do
   IFS='|' read -r ID NAME EMOJI MODEL WORKSPACE_SUFFIX <<< "$AGENT_ENTRY"
   WORKSPACE="$OPENCLAW_HOME/$WORKSPACE_SUFFIX"
-  SRC="$REPO_DIR/agents/$ID"
 
   echo "  → $NAME ($ID)..."
 
@@ -80,37 +80,29 @@ for AGENT_ENTRY in "${AGENTS[@]}"; do
     --emoji "$EMOJI"
 
   mkdir -p "$WORKSPACE"
-  if [ -d "$SRC" ]; then
-    for FILE in SOUL.md AGENTS.md IDENTITY.md HEARTBEAT.md; do
-      if [ -f "$SRC/$FILE" ]; then
-        cp "$SRC/$FILE" "$WORKSPACE/_source_${FILE}"
-        echo "     Staged $FILE"
-      fi
-    done
-
-    cat > "$WORKSPACE/BOOTSTRAP.md" << 'BOOTSTRAP'
-# First-Run Bootstrap (delete this file after completing)
-
-1. Read `_source_SOUL.md` and merge its content into your `SOUL.md`
-2. Read `_source_AGENTS.md` and merge its content into your `AGENTS.md`
-3. If `_source_IDENTITY.md` exists, copy it to `IDENTITY.md`
-4. If `_source_HEARTBEAT.md` exists, copy it to `HEARTBEAT.md`
-5. Delete all `_source_*.md` files and this `BOOTSTRAP.md`
-6. Proceed with your normal role as defined in SOUL.md
-BOOTSTRAP
-  fi
 done
+
+# ── Place ONBOARD.md in Orchestrator workspace ─────────────────────────────
+# The Orchestrator reads this on first startup and fetches all agent
+# definitions from the GitHub repo, seeding each agent's workspace itself.
+ORCH_WORKSPACE="$OPENCLAW_HOME/workspace-orchestrator"
+mkdir -p "$ORCH_WORKSPACE"
+cp "$REPO_DIR/agents/orchestrator/ONBOARD.md" "$ORCH_WORKSPACE/ONBOARD.md"
+cp "$REPO_DIR/agents/orchestrator/SOUL.md"    "$ORCH_WORKSPACE/SOUL.md"
+echo "  Orchestrator bootstrap files written → $ORCH_WORKSPACE"
 
 # ── Write openclaw.json ────────────────────────────────────────────────────
 echo ""
 echo "Writing openclaw.json..."
 mkdir -p "$OPENCLAW_HOME"
 
+# Backup existing config
 if [ -f "$CONFIG_FILE" ]; then
   cp "$CONFIG_FILE" "${CONFIG_FILE}.bak"
   echo "  Backed up existing config → openclaw.json.bak"
 fi
 
+# Substitute placeholders and write live config (no secrets in this repo)
 sed \
   -e "s|\${TELEGRAM_BOT_TOKEN}|$TELEGRAM_BOT_TOKEN|g" \
   -e "s|\${TELEGRAM_GROUP_ID}|$TELEGRAM_GROUP_ID|g" \
@@ -130,8 +122,16 @@ echo ""
 echo "Web UI (once running):"
 echo "  http://127.0.0.1:18789/openclaw"
 echo ""
-echo "To kick off an article, send this in your Telegram group:"
+echo "On first startup, the Orchestrator will automatically:"
+echo "  1. Fetch agent definitions from github.com/erezcarmel/openclaw-social"
+echo "  2. Seed each agent workspace (Researcher, Writer, Editor)"
+echo "  3. Announce readiness in your Telegram group"
+echo ""
+echo "Once the Orchestrator posts '✅ Fleet online' in Telegram, send:"
 echo '  Write an article about: [your topic]'
+echo ""
+echo "To re-sync agent definitions from the repo at any time, send:"
+echo "  @orchestrator sync from repo"
 echo ""
 echo "To add LinkedIn, Twitter, or other agents later:"
 echo "  See docs/adding-agents.md"

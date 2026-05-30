@@ -106,10 +106,10 @@ Kanban: Done ✅
 
 | Agent | Model | Why |
 |-------|-------|-----|
-| Orchestrator | DeepSeek V3 | Routing and Kanban state — no prose, ~3-4x cheaper than Haiku |
+| Orchestrator | DeepSeek V3 | Routing and Kanban state — cheapest option for structured tasks |
 | Researcher | DeepSeek V3 | Structured bullet-point summaries — DeepSeek excels here |
-| Writer | Claude Haiku 4.5 | English prose quality matters — stays on Anthropic |
-| Editor | Claude Sonnet 4.6 | Nuanced editorial judgment — strongest reasoning needed |
+| Writer | GPT-4o-mini | Cost-efficient prose quality on OpenAI |
+| Editor | GPT-4o-mini | Strong reasoning at a fraction of GPT-4o cost |
 
 - Research brief capped at 500 words → limits Writer's context size
 - All sub-agents use `context: isolated` → no conversation history bleed
