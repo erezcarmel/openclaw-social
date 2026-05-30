@@ -1,0 +1,101 @@
+# OpenCLAW Social — Agent Fleet Manifest
+# ============================================================
+# Defines all agents, their models, roles, and Telegram bindings.
+# Run setup.sh to auto-provision the entire fleet from this file.
+#
+# To add a new agent:
+#   1. Add an entry under `agents:`
+#   2. Create agents/<id>/ with SOUL.md, AGENTS.md, IDENTITY.md
+#   3. Add a binding under `bindings:`
+#   4. Re-run setup.sh
+#   See docs/adding-agents.md for the full guide.
+# ============================================================
+
+project:
+  name: "openclaw-social"
+  version: "1.0.0"
+  description: "Autonomous social media and content creation agent system"
+  default_model: "deepseek/deepseek-chat"  # DeepSeek V3 — ~3-4x cheaper than Haiku
+
+agents:
+  # ── Orchestrator ──────────────────────────────────────────────────────────
+  # Entry point for all user messages. Manages the Kanban board and routes
+  # tasks between specialist agents. Notifies the user when articles are done.
+  # DeepSeek V3: pure routing logic, no prose — cost-efficient choice.
+  - id: "orchestrator"
+    name: "🦞 Orchestrator"
+    emoji: "🦞"
+    role: "Kanban workflow manager, task routing, user notifications"
+    model: "deepseek/deepseek-chat"
+    protected: true
+    workspace: ".agents/orchestrator"
+    default: true
+
+  # ── Article Flow Agents ────────────────────────────────────────────────────
+
+  # DeepSeek V3: structured summarization — exactly what DeepSeek excels at.
+  - id: "researcher"
+    name: "🔍 Researcher"
+    emoji: "🔍"
+    role: "Trend analysis, data gathering, structured research briefs"
+    model: "deepseek/deepseek-chat"
+    protected: false
+    workspace: ".agents/researcher"
+
+  # Claude Haiku: English prose quality matters here — stays on Anthropic.
+  - id: "writer"
+    name: "✍️ Writer"
+    emoji: "✍️"
+    role: "Medium article drafting, 800-1000 words, 4-minute read"
+    model: "anthropic/claude-haiku-4-5-20251001"
+    protected: false
+    workspace: ".agents/writer"
+
+  # Claude Sonnet: nuanced editorial judgment — strongest reasoning needed.
+  - id: "editor"
+    name: "📝 Editor"
+    emoji: "📝"
+    role: "Draft review, quality control, approval or revision requests"
+    model: "anthropic/claude-sonnet-4-6"
+    protected: false
+    workspace: ".agents/editor"
+
+  # ── Future Social Agents (uncomment when ready) ────────────────────────────
+  # See docs/adding-agents.md for step-by-step instructions.
+  #
+  # - id: "linkedin"
+  #   name: "💼 LinkedIn"
+  #   emoji: "💼"
+  #   role: "LinkedIn post creation from approved articles"
+  #   model: "anthropic/claude-haiku-4-5-20251001"
+  #   protected: false
+  #   workspace: ".agents/linkedin"
+  #
+  # - id: "twitter"
+  #   name: "🐦 Twitter"
+  #   emoji: "🐦"
+  #   role: "Twitter/X thread creation from approved articles"
+  #   model: "anthropic/claude-haiku-4-5-20251001"
+  #   protected: false
+  #   workspace: ".agents/twitter"
+
+# ── Channel Bindings ──────────────────────────────────────────────────────────
+# All agents share one Telegram group (groupId set during setup.sh).
+# The Orchestrator handles all messages by default.
+# Specialist agents respond only when their @agentId is mentioned.
+bindings:
+  - agentId: "orchestrator"
+    channel: "telegram"
+    requireMention: false      # Default listener; all unaddressed messages route here
+
+  - agentId: "researcher"
+    channel: "telegram"
+    requireMention: true       # Responds only when @researcher is mentioned
+
+  - agentId: "writer"
+    channel: "telegram"
+    requireMention: true       # Responds only when @writer is mentioned
+
+  - agentId: "editor"
+    channel: "telegram"
+    requireMention: true       # Responds only when @editor is mentioned
