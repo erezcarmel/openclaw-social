@@ -14,7 +14,7 @@ echo "  OpenCLAW Social — Agent Setup"
 echo "========================================="
 echo ""
 
-# ── Preflight checks ──────────────────────────────────────────────────────
+# ── Preflight checks ───────────────────────────────────────────────────────
 if ! command -v openclaw &>/dev/null; then
   echo "❌  openclaw CLI not found."
   echo "    Install it with: npm install -g openclaw"
@@ -64,10 +64,12 @@ AGENTS=(
 echo ""
 echo "Registering agents..."
 
+REPO_URL="https://github.com/erezcarmel/openclaw-social"
+RAW_BASE="https://raw.githubusercontent.com/erezcarmel/openclaw-social/main"
+
 for AGENT_ENTRY in "${AGENTS[@]}"; do
   IFS='|' read -r ID NAME EMOJI MODEL WORKSPACE_SUFFIX <<< "$AGENT_ENTRY"
   WORKSPACE="$OPENCLAW_HOME/$WORKSPACE_SUFFIX"
-  SRC="$REPO_DIR/agents/$ID"
 
   echo "  → $NAME ($ID)..."
 
@@ -80,37 +82,29 @@ for AGENT_ENTRY in "${AGENTS[@]}"; do
     --emoji "$EMOJI"
 
   mkdir -p "$WORKSPACE"
-  if [ -d "$SRC" ]; then
-    for FILE in SOUL.md AGENTS.md IDENTITY.md HEARTBEAT.md; do
-      if [ -f "$SRC/$FILE" ]; then
-        cp "$SRC/$FILE" "$WORKSPACE/_source_${FILE}"
-        echo "     Staged $FILE"
-      fi
-    done
-
-    cat > "$WORKSPACE/BOOTSTRAP.md" << 'BOOTSTRAP'
-# First-Run Bootstrap (delete this file after completing)
-
-1. Read `_source_SOUL.md` and merge its content into your `SOUL.md`
-2. Read `_source_AGENTS.md` and merge its content into your `AGENTS.md`
-3. If `_source_IDENTITY.md` exists, copy it to `IDENTITY.md`
-4. If `_source_HEARTBEAT.md` exists, copy it to `HEARTBEAT.md`
-5. Delete all `_source_*.md` files and this `BOOTSTRAP.md`
-6. Proceed with your normal role as defined in SOUL.md
-BOOTSTRAP
-  fi
 done
+
+# ── Place ONBOARD.md in Orchestrator workspace ─────────────────────────────
+# The Orchestrator reads this on first startup and fetches all agent
+# definitions from the GitHub repo, seeding each agent's workspace itself.
+ORCH_WORKSPACE="$OPENCLAW_HOME/workspace-orchestrator"
+mkdir -p "$ORCH_WORKSPACE"
+cp "$REPO_DIR/agents/orchestrator/ONBOARD.md" "$ORCH_WORKSPACE/ONBOARD.md"
+cp "$REPO_DIR/agents/orchestrator/SOUL.md"    "$ORCH_WORKSPACE/SOUL.md"
+echo "  Orchestrator bootstrap files written → $ORCH_WORKSPACE"
 
 # ── Write openclaw.json ────────────────────────────────────────────────────
 echo ""
 echo "Writing openclaw.json..."
 mkdir -p "$OPENCLAW_HOME"
 
+# Backup existing config
 if [ -f "$CONFIG_FILE" ]; then
   cp "$CONFIG_FILE" "${CONFIG_FILE}.bak"
   echo "  Backed up existing config → openclaw.json.bak"
 fi
 
+# Substitute placeholders and write live config (no secrets in this repo)
 sed \
   -e "s|\${TELEGRAM_BOT_TOKEN}|$TELEGRAM_BOT_TOKEN|g" \
   -e "s|\${TELEGRAM_GROUP_ID}|$TELEGRAM_GROUP_ID|g" \
@@ -130,8 +124,16 @@ echo ""
 echo "Web UI (once running):"
 echo "  http://127.0.0.1:18789/openclaw"
 echo ""
-echo "To kick off an article, send this in your Telegram group:"
+echo "On first startup, the Orchestrator will automatically:"
+echo "  1. Fetch agent definitions from github.com/erezcarmel/openclaw-social"
+echo "  2. Seed each agent workspace (Researcher, Writer, Editor)"
+echo "  3. Announce readiness in your Telegram group"
+echo ""
+echo "Once the Orchestrator posts '✅ Fleet online' in Telegram, send:"
 echo '  Write an article about: [your topic]'
+echo ""
+echo "To re-sync agent definitions from the repo at any time, send:"
+echo "  @orchestrator sync from repo"
 echo ""
 echo "To add LinkedIn, Twitter, or other agents later:"
 echo "  See docs/adding-agents.md"

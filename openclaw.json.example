@@ -103,5 +103,10 @@
   },
   "session": {
     "dmScope": "per-channel-peer"
+  },
+  "configRepo": {
+    "url": "https://github.com/erezcarmel/openclaw-social",
+    "branch": "main",
+    "rawBase": "https://raw.githubusercontent.com/erezcarmel/openclaw-social/main"
   }
 }
