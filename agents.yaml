@@ -15,7 +15,7 @@ project:
   name: "openclaw-social"
   version: "1.0.0"
   description: "Autonomous social media and content creation agent system"
-  default_model: "deepseek/deepseek-chat"  # DeepSeek V3 — ~3-4x cheaper than Haiku
+  default_model: "deepseek/deepseek-chat"  # Routed via OpenRouter; swap any model without changing API keys
 
 agents:
   # ── Orchestrator ──────────────────────────────────────────────────────────

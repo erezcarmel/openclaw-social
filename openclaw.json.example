@@ -40,7 +40,8 @@
     ],
     "defaults": {
       "model": {
-        "primary": "deepseek/deepseek-chat"
+        "primary": "deepseek/deepseek-chat",
+        "provider": "openrouter"
       },
       "subagents": {
         "allowAgents": ["researcher", "writer", "editor"],

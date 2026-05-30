@@ -20,8 +20,7 @@ All agents communicate visibly in a shared Telegram group, referencing each othe
 ### Prerequisites
 - Node.js 24+ (or 22.19+ LTS)
 - OpenCLAW CLI: `npm install -g openclaw`
-- OpenAI API key
-- DeepSeek API key
+- OpenRouter API key (routes to all model providers — get one at openrouter.ai)
 - Telegram bot token (from @BotFather)
 
 ### One-Command Setup

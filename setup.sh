@@ -38,8 +38,7 @@ prompt_secret() {
   eval "$var_name=\"$value\""
 }
 
-prompt_secret OPENAI_API_KEY     "OpenAI API key (for Writer + Editor — get at platform.openai.com)"
-prompt_secret DEEPSEEK_API_KEY   "DeepSeek API key (for Orchestrator + Researcher — get at platform.deepseek.com)"
+prompt_secret OPENROUTER_API_KEY "OpenRouter API key (routes to all providers — get at openrouter.ai/keys)"
 prompt_secret TELEGRAM_BOT_TOKEN "Telegram bot token (from @BotFather)"
 printf "Telegram group chat ID (e.g. -1001234567890): "
 read -r TELEGRAM_GROUP_ID
@@ -47,8 +46,7 @@ echo ""
 
 # ── Register API keys ──────────────────────────────────────────────────────
 echo "Registering API keys..."
-echo "$OPENAI_API_KEY"   | openclaw models auth paste-token --provider openai
-echo "$DEEPSEEK_API_KEY" | openclaw models auth paste-token --provider deepseek
+echo "$OPENROUTER_API_KEY" | openclaw models auth paste-token --provider openrouter
 
 # ── Agent definitions (mirrors agents.yaml) ────────────────────────────────
 # Format: id|display_name|emoji|model|workspace_suffix
