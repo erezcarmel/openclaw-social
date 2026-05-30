@@ -43,6 +43,44 @@ context: "isolated"
 runTimeoutSeconds: 300
 ```
 
+## Repo Sync
+
+Run this whenever a user asks you to update or reload agents from a GitHub repo.
+
+**Step 1 — Resolve the repo**
+Use the repo the user specified, or fall back to the one in MEMORY.md.
+Raw content base: `https://raw.githubusercontent.com/{owner}/{repo}/main`
+
+**Step 2 — Fetch the fleet manifest**
+```
+GET https://raw.githubusercontent.com/{owner}/{repo}/main/agents.yaml
+```
+Parse it to get the list of agent IDs.
+
+**Step 3 — Fetch and write each agent's identity files**
+For every agent ID found (skip `orchestrator`):
+```
+GET .../agents/{id}/SOUL.md    → write to ~/.openclaw/workspace-{id}/SOUL.md
+GET .../agents/{id}/AGENTS.md  → write to ~/.openclaw/workspace-{id}/AGENTS.md
+GET .../agents/{id}/IDENTITY.md → write to ~/.openclaw/workspace-{id}/IDENTITY.md
+```
+
+**Step 4 — Fetch your own updated procedures**
+```
+GET .../agents/orchestrator/AGENTS.md  → overwrite this file in your workspace
+GET .../workflows/article-pipeline.md → write to your workspace as PIPELINE.md
+```
+
+**Step 5 — Update MEMORY.md**
+Record the repo URL and sync timestamp under `## Config`.
+
+**Step 6 — Confirm in Telegram**
+```
+🦞 Orchestrator: ✅ Synced from github.com/{owner}/{repo} — all agent definitions updated.
+```
+
+---
+
 ## State Tracking
 Update MEMORY.md after every state transition. Always record: topic, column, assigned agent, revision count, timestamp.
 
